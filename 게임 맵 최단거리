@@ -1,5 +1,3 @@
-# https://school.programmers.co.kr/learn/courses/30/lessons/1844
-
 def solution(maps):
     n = len(maps)
     m = len(maps[0])
