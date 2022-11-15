@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+#define MAX 101
+using namespace std;
+typedef pair<int, int> pii;
+
+
+vector<int> ans(2);
+pii parent[MAX][MAX];
+int cnt[MAX][MAX];
+pii Move[4] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};;
+
+void init(int m, int n) {
+    ans[0] = ans[1] = 0;
+    
+    for(int i=0; i<m; i++) {
+        for(int j=0; j<n; j++) {
+            parent[i][j] = {i, j};
+            cnt[i][j] = -1;
+        }
+    }
+}
+
+pii Find(pii a) {
+    if(parent[a.first][a.second] == a)  return a;
+    return parent[a.first][a.second] = Find(parent[a.first][a.second]);
+}
+
+void Union(pair<int, int> a, pair<int, int> b) {
+    a = Find(a);
+    b = Find(b);
+    
+    if(a == b)  return;
+    
+    if(cnt[a.first][a.second] <= cnt[b.first][b.second]) {
+        cnt[a.first][a.second] += cnt[b.first][b.second];
+        parent[b.first][b.second] = a;
+    }
+    else{
+        cnt[b.first][b.second] += cnt[a.first][a.second];
+        parent[a.first][a.second] = b;
+    }
+}
+
+void BFS(int m, int n, int i, int j, vector<vector<int>> picture) {
+    queue<pii> q;
+    q.push({i, j});
+    while(!q.empty()) {
+        int cur_i = q.front().first;
+        int cur_j = q.front().second;
+        q.pop();
+        
+        for(int k=0; k<4; k++) {
+            int new_i = cur_i + Move[k].first;
+            int new_j = cur_j + Move[k].second;
+            if(!(new_i >= 0 && new_i < m && new_j >= 0 && new_j < n))   continue;
+            if(picture[new_i][new_j] == picture[i][j] && parent[i][j] != parent[new_i][new_j]) {
+                q.push({new_i, new_j});
+                Union({i, j}, {new_i, new_j});
+            }
+        }
+    }
+}
+
+vector<int> solution(int m, int n, vector<vector<int>> picture) {
+    init(m, n);
+    
+    for(int i=0; i<m; i++) {
+        for(int j=0; j<n; j++) {
+            pii a = {i, j};
+            if(picture[i][j] != 0 && Find({i, j}) == a) {
+                BFS(m, n, i, j, picture);
+                ans[0]++;
+                ans[1] = max(ans[1], -cnt[i][j]);
+            }
+        }
+    }
+        
+    return ans;
+}
