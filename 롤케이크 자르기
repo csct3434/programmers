@@ -1,0 +1,31 @@
+def solution(topping):
+    flag1 = [False for _ in range(10001)]
+    flag2 = [False for _ in range(10001)]
+    front = [0 for i in range(len(topping))]
+    back = [0 for i in range(len(topping))]
+    
+    front[0] = 1
+    flag1[topping[0]] = True
+    for i in range(1, len(topping)):
+        front[i] = front[i-1]
+        if(not flag1[topping[i]]):
+            flag1[topping[i]] = True
+            front[i] += 1
+    
+    topping.reverse()
+    back[0] = 1
+    flag2[topping[0]] = True
+    for i in range(1, len(topping)):
+        back[i] = back[i-1]
+        if(not flag2[topping[i]]):
+            flag2[topping[i]] = True
+            back[i] += 1
+    
+    ans = 0
+    for i in range(len(topping) - 1):
+        if(front[i] > back[len(topping) - i - 2]):
+            break
+        if(front[i] == back[len(topping) - i - 2]):
+            ans += 1
+        
+    return ans
